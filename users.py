@@ -6,10 +6,10 @@ from flask_bcrypt import Bcrypt
 bcrypt = Bcrypt(app)
 
 @app.route('/')
-def index():
+def loginPage():
     if 'user_id' not in session:
         return redirect('/logout')
-    return render_template('index.html')
+    return render_template('login.html')
 
 @app.route('/register',methods=['POST'])
 def register():
@@ -38,7 +38,7 @@ def login():
         flash("Invalid Password","login")
         return redirect('/')
     session['user_id'] = user.id
-    return redirect('/login/registration')
+    return redirect('/dashboard')
 
 @app.route('/')
 def dashboard():
@@ -47,9 +47,9 @@ def dashboard():
     data ={
         'id': session['user_id']
     }
-    return render_template("index.html",user=User.get_by_id(data),users=User.get_all(),tickets=Ticket.get_all())
+    return render_template("dashboard.html",user=User.get_by_id(data),users=User.get_all(),tickets=Ticket.get_all())
 
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect('/login/registration')
+    return redirect('/')
