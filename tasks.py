@@ -4,14 +4,14 @@ from WorkRequestTool.models.ticket import Ticket
 from WorkRequestTool.models.user import User
 
 
-@app.route('/tasks/new')
+@app.route('/tickets/new')
 def new_ticket():
     if 'user_id' not in session:
         return redirect('/logout')
     data = {
         "id":session['user_id']
     }
-    return render_template('new_ticket.html',user=User.get_by_id(data))
+    return render_template('createTicket.html',user=User.get_by_id(data))
 
 
 @app.route('/create/ticket',methods=['POST'])
@@ -23,11 +23,11 @@ def create_ticket():
     data = {
         "department": request.form["department"],
         "ticketNumber": request.form["ticketNumber"],
-        "ticket": int(request.form["ticket"]),
+        "ticket":   request.form["ticket"],
         "submittedBy": session["submittedBy"]
     }
-    ticket.save(data)
-    return redirect('/index')
+    Ticket.save(data)
+    return redirect('/dashboard')
 
 @app.route('/tickets/<int:id>/edit')
 def edit_ticket(id):
@@ -39,7 +39,7 @@ def edit_ticket(id):
     user_data = {
         "id":session['user_id']
     }
-    return render_template("edit_ticket.html",edit=Ticket.get_one(data),user=User.get_by_id(user_data))
+    return render_template("editTicket.html",edit=Ticket.get_one(data),user=User.get_by_id(user_data))
 
 @app.route('/update/ticket',methods=['POST'])
 def update_ticket():
@@ -53,7 +53,7 @@ def update_ticket():
     }
     
     if not Ticket.validate_ticket(request.form):
-        return redirect('/tickets/' + data['id'] + '/edit')
+        return redirect('/ticket/details/<int:id>')
 
 @app.route('/tickets/<int:id>/respond')
 def respond_ticket(id):
@@ -68,7 +68,7 @@ def respond_ticket(id):
     return render_template("respond.html",ticket=Ticket.get_one(data),user=User.get_by_id(user_data))
 
 @app.route('/update/response',methods=['POST'])
-def update_ticket():
+def update_response():
     if 'user_id' not in session:
         return redirect('/logout')
     data = {
@@ -82,9 +82,9 @@ def update_ticket():
         return redirect('/tickets/' + data['id'] + '/repond')
 
     Ticket.update(data)
-    return redirect('/index')
+    return redirect('/dashboard')
 
-@app.route('/details/<int:id>')
+@app.route('ticekt/details/<int:id>')
 def show_ticket(id):
     if 'user_id' not in session:
         return redirect('/logout')
@@ -94,7 +94,7 @@ def show_ticket(id):
     user_data = {
         "id":session['user_id']
     }
-    return render_template("show_ticket.html",ticket=Ticket.get_one(data),user=User.get_by_id(user_data),users=User.get_all())
+    return render_template("ticketDetails.html",ticket=Ticket.get_one(data),user=User.get_by_id(user_data),users=User.get_all())
 
 @app.route('/destroy/ticket/<int:id>')
 def destroy_ticket(id):
@@ -104,7 +104,7 @@ def destroy_ticket(id):
         "id":id
     }
     Ticket.destroy(data)
-    return redirect('/index')
+    return redirect('/dashboard')
 
 @app.route('/ticket/<int:id>/comment',methods=['POST'])
 def add_comment(id):
@@ -115,4 +115,4 @@ def add_comment(id):
         "comments": request.form["comments"]
     }
     Ticket.destroy(data)
-    return redirect('/index')
+    return redirect('/dashboard')
