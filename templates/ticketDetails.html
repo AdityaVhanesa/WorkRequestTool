@@ -27,12 +27,24 @@
         <div class="details">
             <div class="card">
                 <div class="card-header text-center font-weight-bold fs-4 border border-secondary tableHead" > Ticket Details </div>
-                <ul class="list-group list-group-flush border border-secondary">
-                    <li class="list-group-item">Department: {{ ticket.department }} </li>
-                    <li class="list-group-item">Ticket Number: {{ ticket.ticketNumber }}</li>
-                    <li class="list-group-item">Ticket Description: {{ ticket.description }}</li>
-                    <li class="list-group-item">Submitted By: {{ ticket.submittedBy }}</li>
-                </ul>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <ul class="list-group list-group-flush border border-secondary">
+                            <li class="list-group-item">Department: {{ ticket.department }}  </li>
+                            <li class="list-group-item">Ticket Number: {{ ticket.ticketNumber }} </li>
+                            <li class="list-group-item">Ticket Description: {{ ticket.description }} </li>
+                            <li class="list-group-item">Submitted By: {{ ticket.submittedBy }} </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6">
+                        <ul class="list-group list-group-flush border border-secondary">
+                            <li class="list-group-item">Start Date: {{ response.startDate }} </li>
+                            <li class="list-group-item">Complete Date: {{ response.completeDate }} </li>
+                            <li class="list-group-item">Report Link: {{ response.reportLink }}</li>
+                            <li class="list-group-item">Status: {{ response.status }} </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="btn-group" role="group" aria-label="Basic example">
                 <button type="button" class="btn btn-secondary" href="/response">Respond</button>
