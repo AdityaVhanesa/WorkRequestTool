@@ -1,6 +1,6 @@
 from WRT.config.dateTime import dateTime
 from WRT.config.model import Model
-from WRT.models.tickets import Ticket
+from WRT.models import tickets as Tickets
 from WRT.models.users import User
 
 
@@ -20,11 +20,33 @@ class Comment(Model):
         self.updated_at = dateTime(data["updated_at"])
 
     def _getUser(self, data, *args):
-        return User.get(data, *args)
+        return User.get(data, *args)[0]
 
     def _getTicket(self, data, *args):
-        return Ticket.get(data, *args)
+        return Tickets.Ticket.get(data, *args)[0]
 
     @classmethod
     def save(cls, data, *args):
         return super().save(data, "comment", "posted_by", "posted_on")
+
+
+if __name__ == '__main__':
+    data = {
+        "comment": "Hi Zeal Here.",
+        "posted_by": 6,
+        "posted_on": 1,
+    }
+    Comment.save(data)
+
+
+
+
+
+
+
+
+
+
+
+
+
