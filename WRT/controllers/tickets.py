@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from WRT.middlewares.authenticator import loginRequired
 from flask import render_template, request, session, redirect
 from WRT.middlewares.emailBackEnd import EmailBackend
 from WRT import app
@@ -13,11 +13,13 @@ from WRT.models import users as Users
 
 
 @app.route('/ticket/new')
+@loginRequired
 def new_ticket():
     return render_template('tickets/createTicket.html', departments=Departments.Department.get())
 
 
 @app.route("/ticket/create", methods=["post"])
+@loginRequired
 def create_ticket():
     form = TicketForm(request.form)
     if form.isValid():
@@ -42,6 +44,7 @@ def create_ticket():
 
 
 @app.route('/ticket/<int:id>/edit')
+@loginRequired
 def edit_ticket(id):
     ticketObject = Tickets.Ticket.get({"id": id}, "id")[0]
     departments = Departments.Department.get()
@@ -49,6 +52,7 @@ def edit_ticket(id):
 
 
 @app.route('/ticket/<int:id>/details')
+@loginRequired
 def ticket_details(id):
     ticketObject = Tickets.Ticket.get({"id": id}, "id")[0]
     comments = Comments.Comment.get({"posted_on": id}, "posted_on")
@@ -58,6 +62,7 @@ def ticket_details(id):
 
 
 @app.route("/ticket/<int:id>/assign")
+@loginRequired
 def ticket_assign(id):
     userObject = Users.User.get({"id": session.get("user_id")}, "id")[0]
     userObject = Users.User.get({"roles_id": userObject.role.id}, "roles_id")
@@ -65,6 +70,7 @@ def ticket_assign(id):
 
 
 @app.route("/ticket/<int:id>/assign_user", methods=["post"])
+@loginRequired
 def assign_user(id):
     data = {"assigned_to": int(request.form.get("assigned")),
             "id": id}
@@ -85,11 +91,13 @@ def assign_user(id):
 
 
 @app.route('/ticket/<int:id>/response')
+@loginRequired
 def ticket_response(id):
     return render_template("tickets/response.html", ticket_id = id)
 
 
 @app.route('/ticket/<int:id>/update', methods=["post"])
+@loginRequired
 def update_ticket(id):
     form = TicketForm(request.form)
     if form.isValid():
@@ -104,12 +112,14 @@ def update_ticket(id):
 
 
 @app.route("/ticket/<int:id>/close")
+@loginRequired
 def close_ticket(id):
     Tickets.Ticket.update({"status": 1, "id": id}, values=["status"], location=["id"])
     return redirect("/dashboard")
 
 
 @app.route("/ticket/<int:id>/response/record", methods=["post"])
+@loginRequired
 def ticket_response_update(id):
     start_date = request.form.get("startDate")
     close_date = request.form.get("completionDate")
@@ -144,63 +154,8 @@ def ticket_response_update(id):
     return redirect(f"/ticket/{id}/details")
 
 
-# @app.route('/tickets/<int:id>/respond')
-# def respond_ticket(id):
-#     if 'user_id' not in session:
-#         return redirect('/logout')
-#     data = {
-#         "id": id
-#     }
-#     user_data = {
-#         "id": session['user_id']
-#     }
-#     return render_template("respond.html", ticket=Ticket.get_one(data), user=User.get_by_id(user_data))
-#
-#
-# @app.route('/update/response', methods=['POST'])
-# def update_ticket():
-#     if 'user_id' not in session:
-#         return redirect('/logout')
-#     data = {
-#         "startDate": request.form["startDate"],
-#         "completionDate": request.form["completionDate"],
-#         "reportLink": request.form["reportLink"],
-#         "comments": session["comments"]
-#     }
-#
-#     if not Ticket.validate_ticket(request.form):
-#         return redirect('/tickets/' + data['id'] + '/repond')
-#
-#     Ticket.update(data)
-#     return redirect('/index')
-#
-#
-# @app.route('/details/<int:id>')
-# def show_ticket(id):
-#     if 'user_id' not in session:
-#         return redirect('/logout')
-#     data = {
-#         "id": id
-#     }
-#     user_data = {
-#         "id": session['user_id']
-#     }
-#     return render_template("show_ticket.html", ticket=Ticket.get_one(data), user=User.get_by_id(user_data),
-#                            users=User.get_all())
-#
-#
-# @app.route('/destroy/ticket/<int:id>')
-# def destroy_ticket(id):
-#     if 'user_id' not in session:
-#         return redirect('/logout')
-#     data = {
-#         "id": id
-#     }
-#     Ticket.destroy(data)
-#     return redirect('/index')
-#
-#
 @app.route('/ticket/<int:id>/comment', methods=['POST'])
+@loginRequired
 def add_comment(id):
     form = CommentForm(request.form)
     if form.isValid():
