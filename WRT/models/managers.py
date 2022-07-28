@@ -1,30 +1,29 @@
 from WRT.config.dateTime import dateTime
 from WRT.config.model import Model
-from WRT.models import departments as Departments
 from WRT.models import users as Users
+from WRT.models import roles as Roles
 
 
-class Role(Model):
-    tableName = "roles"
+class Manager(Model):
+    tableName = "managers"
 
     def __init__(self, data):
         super().__init__(data)
         self.id = data["id"]
-        self.role_name = data["role_name"]
-        self.department = self._getDepartment({"id": data["departments_id"]}, "id")
+        self.user = self._getUser({"id": data["users_id"]}, "id")
         self.created_at = dateTime(data["created_at"])
         self.updated_at = dateTime(data["updated_at"])
 
-    def _getDepartment(self, data, *args):
-        return Departments.Department.get(data, *args)
+    def _getUser(self, data, *args):
+        return Users.User.get(data, *args)[0]
 
     @classmethod
     def save(cls, data, *args):
-        return super().save(data, "role_name", "departments_id")
-    
-    @classmethod
-    def update(cls, data, **kwargs):
-        super().update(data, **kwargs)
+        super().save(data, "users_id")
+        managerObject = cls.get(data, 'users_id')[0]
+        data["id"] = managerObject.user.role.id
+        data["managers_id"] = managerObject.id
+        Roles.Role.update(data, values=["managers_id"], location=["id"])
 
     @classmethod
     def delete(cls, data, *args):
@@ -40,7 +39,7 @@ class Role(Model):
         return super().delete(data, *args)
 
     def __str__(self):
-        return f"Role --> {self.role_name}"
+        return f"{self.user}"
 
 
 if __name__ == '__main__':

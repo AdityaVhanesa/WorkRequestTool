@@ -26,8 +26,8 @@ class query:
             return False
 
         basicQuery = f"UPDATE {tableName} SET "
-        updatePair = self.__buildKeyValuePair(",", kwargs["values"])
-        locationPair = self.__buildKeyValuePair("AND", kwargs["location"])
+        updatePair = self._buildKeyValuePair(",", kwargs["values"])
+        locationPair = self._buildKeyValuePair("AND", kwargs["location"])
         basicQuery += updatePair + " WHERE " + locationPair + self.EOL
         return basicQuery
 
@@ -36,7 +36,7 @@ class query:
             return False
 
         basicQuery = f"DELETE FROM {tableName} WHERE "
-        basicQuery += self.__buildKeyValuePair("AND", list(args)) + self.EOL
+        basicQuery += self._buildKeyValuePair("AND", list(args)) + self.EOL
         return basicQuery
 
     def _buildKeyValueIndividual(self, item, isComma=False):
@@ -52,7 +52,7 @@ class query:
 
         if len(itemList) > 1:
             for value in itemList[1::]:
-                key, value = self.__buildKeyValueIndividual(value)
+                key, value = self._buildKeyValueIndividual(value)
                 basicClause += f" {deliminator} {key} = {value}"
 
         return basicClause
