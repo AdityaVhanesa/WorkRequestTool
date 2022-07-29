@@ -30,26 +30,25 @@ class EmailBackend:
         self.scopes = ['https://www.googleapis.com/auth/gmail.compose']
 
     def main(self):
-        pass
-        # if not self.credObject or not self.credObject.valid:
-        #     if self.credObject and self.credObject.expired and self.credObject.refresh_token:
-        #         self.credObject.refresh(Request())
-        #     else:
-        #         flow = InstalledAppFlow.from_client_secrets_file(
-        #             self.credentials, self.scopes)
-        #         self.credObject = flow.run_local_server(port=0)
-        #     # Save the credentials for the next run
-        #     with open('token.json', 'w') as token:
-        #         token.write(self.credObject.to_json())
-        #
-        # try:
-        #     # Call the Gmail API
-        #     self.service = build('gmail', 'v1', credentials=self.credObject)
-        #     message = self.create_notification()
-        #     self.send_notification(message)
-        #
-        # except HttpError as error:
-        #     print(f'An error occurred: {error}')
+        if not self.credObject or not self.credObject.valid:
+            if self.credObject and self.credObject.expired and self.credObject.refresh_token:
+                self.credObject.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    self.credentials, self.scopes)
+                self.credObject = flow.run_local_server(port=0)
+            # Save the credentials for the next run
+            with open('token.json', 'w') as token:
+                token.write(self.credObject.to_json())
+
+        try:
+            # Call the Gmail API
+            self.service = build('gmail', 'v1', credentials=self.credObject)
+            message = self.create_notification()
+            self.send_notification(message)
+
+        except HttpError as error:
+            print(f'An error occurred: {error}')
 
     def create_notification(self):
         message, subject = "NA"

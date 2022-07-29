@@ -2,17 +2,17 @@ import threading
 import time
 
 from flask import session, flash, redirect
-
+from functools import wraps
 from WRT import encription
 from WRT.models import managers as Managers
 
 
 def loginRequired(function):
+    @wraps(function)
     def innerFunction(*args, **kwargs):
         if not Authenticator.isAthenticated and Authenticator.isSessionExpired:
             return redirect("/")
         return function(*args, **kwargs)
-
     return innerFunction
 
 
